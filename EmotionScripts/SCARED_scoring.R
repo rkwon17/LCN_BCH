@@ -129,14 +129,16 @@ scaredc_full <- full_join(session,scaredc_full)
 ###----write raw: ideally want to write to server- wrote to desktop for troubleshooting purposes (4/22/21)------
 
 write.csv(scaredc_full,"/Users/rachelkwon/Desktop/scaredc_4.20.21.csv")
-write.csv(scaredp_full,"/Users/rachelkwon/Desktop/scaredp_4.20.21.csv")
 
+#load cleaned scaredc (cleaned - missing data troubleshooting - change later)
 scaredcscore <- read.csv("/Users/rachelkwon/Desktop/scaredc_4.20.21.csv")
+
+#run scoring function
 scaredcscore <- as.data.frame(scaredcscore)
 scaredc_final <- scaredC(scaredcscore)
-
+scaredp_final <- scaredP(scaredp_full)
 write.csv(scaredc_final,"/Users/rachelkwon/Desktop/scaredc_scored_4.22.21.csv")
-
+write.csv(scaredp_final,"/Users/rachelkwon/Desktop/scaredp_scored_4.22.21.csv")
 #FUNCTIONS ARE HERE 
 
 ###---scaredC scoring function -----
