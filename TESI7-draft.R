@@ -1,13 +1,15 @@
-#TESI PRR cleaning
-
+#TESI PRR cleaning- created by RK April 21 for Emotion Project
+#last edited 4/28/21
 library(tidyverse)
 library(dplyr)
 library(psych)
 library(ggplot2)
-
+library(REDCapR)
 library(naniar)
 
-describe(tesiendorse_NA,IQR=TRUE,na.rm = TRUE)
+###---call API token here (different for each person)------
+#redcap api token call (will need to request API token from redcap admin)
+source("~/Desktop/config.R")
 
 ###-----redcap api pull--------
 subjlist_erp<- c("subj","eligibility", "exclusion_criteria")
@@ -81,7 +83,7 @@ tesi_endorsement <- tesi_prr %>% select(subj,tesi_1_1,tesi_1_2,tesi_1_3,tesi_1_4
                                      ,tesi_5_2,tesi_6_1,tesi_6_2,tesi_7_1)
 
 tesiendorse_NA<- tesi_endorsement%>% replace_with_na_all(condition = ~.x == 9)
-tesiendorse_NA$sumscore <- rowSums( tesiendorse_NA[,2:25] )
+tesiendorse_NA$sumscore <- rowSums( tesiendorse_NA[,2:25],na.rm=TRUE )
 
 #tesi affect scores: 0 - no 1/ affected my child/ 9 - DNR #confirm that there should be this many - 24 affect variables
 tesi_affect <- tesi_prr %>% select(subj,tesi_1_1a,tesi_1_2a,tesi_1_3a,tesi_1_4aa,
@@ -90,10 +92,14 @@ tesi_2_5a,tesi_3_1a,tesi_3_2a,tesi_3_3a,tesi_4_1a,tesi_4_2a,tesi_4_3a,tesi_5_1a,
 tesi_5_2a,tesi_6_1a,tesi_6_2a,tesi_7_1a)
 
 tesi_affectNA <- tesi_affect %>% replace_with_na_all(condition = ~.x == 9)
+
+
+#if statement
+#tesi_affectNA %>% filter(!tesiendorse_NA$sumscore =='NA') %>% summarise(rowSums(tesi_affectNA[,2:25],na.rm = TRUE))
 tesi_affectNA$affectscore <- rowSums(tesi_affectNA[,2:25],na.rm = TRUE)
 
 #merge files - 
 
-tesi_full <- full_join(tesiendorse_NA, tesiendorse_NA, by='subj')
+tesi_full <- full_join(tesiendorse_NA, tesi_affectNA, by='subj')
 
 write.csv(tesi_full,"/Users/rachelkwon/Desktop/tesi7test.csv",na='')
